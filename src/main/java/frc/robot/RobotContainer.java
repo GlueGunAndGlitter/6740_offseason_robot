@@ -1,63 +1,140 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.commands.driveCommands.TeleopSwerve;
+import frc.robot.subsystems.*;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and trigger mappings) should be declared here.
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
+ * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+	// veriabels
+	public static double destenceFromAprilTag = 10;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    // Configure the trigger bindings
-    configureBindings();
-  }
+	/* Controllers */
+	public static final XboxController xboxController = new XboxController(0);
+	public static final CommandXboxController commandXBoxController = new CommandXboxController(0);
+	private final static Joystick driver = new Joystick(0);
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-  private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
+	/* Drive Controls */
+	private static final int translationAxis = XboxController.Axis.kLeftY.value;
+	private static final int strafeAxis = XboxController.Axis.kLeftX.value;
+	private static final int rotationAxis = XboxController.Axis.kRightX.value;
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-  }
+	/* Driver Buttons */
+	private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kStart.value);
+	private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
-  }
+	POVButton d_Uppov = new POVButton(driver, 0);
+	POVButton d_Rightpov = new POVButton(driver, 90);
+	POVButton d_Downpov = new POVButton(driver, 180);
+	POVButton d_Leftpov = new POVButton(driver, 270);
+
+	// private final JoystickButton IntakeEnableCommand = new JoystickButton(driver,
+	// XboxController.Button.kRightBumper.value);
+	/* Subsystems */
+	public final static Swerve swerve = new Swerve();
+	public final static Intake intake = new Intake();
+
+	private final SendableChooser<Command> autoChooser;
+
+	/**
+	 * q+
+	 * `
+	 * The container
+	 * for the robot. Contains subsystems, OI devices, and commands.
+	 */
+	public RobotContainer() {
+		// Another option that allows you to specify the default auto by its name
+		// autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
+		configureButtonBindings();
+		setDefaultCommands();
+		registerCommand();
+		autoChooser = AutoBuilder.buildAutoChooser();
+
+		Shuffleboard.getTab("Robot")
+				.add("Auto", autoChooser);
+	}
+
+	/**
+	 * Use this method to define your button->command mappings. Buttons can be
+	 * created by
+	 * instantiating a {@link GenericHID} or one of its subclasses ({@link
+	 * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+	 * it to a {@link
+	 * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+	 */
+	private void configureButtonBindings() {
+
+		/* Driver Buttons */
+		zeroGyro.onTrue(new InstantCommand(() -> swerve.zeroHeading()));
+
+		commandXBoxController.a().whileTrue(intake.inputCommand(
+			Robot.rightMotorShafelbordSpeed.getDouble(0),
+			 Robot.leftMotorShfelbordSpeed.getDouble(0)));
+
+		
+		commandXBoxController.b().whileTrue(intake.outputCommand(
+			Robot.rightMotorShafelbordSpeed.getDouble(0),
+			 Robot.leftMotorShfelbordSpeed.getDouble(0)));
+	}
+
+	private void setDefaultCommands() {
+		swerve.setDefaultCommand(teleopSwerve(false));
+		intake.setDefaultCommand(intake.stopMotorsCommand());
+	}
+
+	private Command teleopSwerve(boolean crossWhileNotMoving) {
+		return new TeleopSwerve(
+				swerve,
+				() -> -driver.getRawAxis(translationAxis),
+				() -> -driver.getRawAxis(strafeAxis),
+				() -> -driver.getRawAxis(rotationAxis),
+				() -> robotCentric.getAsBoolean(),
+				crossWhileNotMoving);
+	}
+
+	public void registerCommand() {
+
+	}
+
+
+	/**
+	 * Use this to pass the autonomous command to the main {@link Robot} class.
+	 *
+	 * @return the command to run in autonomous
+	 */
+	public Command getAutonomousCommand() {
+		return autoChooser.getSelected();
+	}
+
+	public static boolean areJoysticksMoving() {
+		return Math.abs(MathUtil.applyDeadband(driver.getRawAxis(translationAxis), Constants.stickDeadband)) > 0.0 ||
+				Math.abs(MathUtil.applyDeadband(driver.getRawAxis(strafeAxis), Constants.stickDeadband)) > 0.0 ||
+				Math.abs(MathUtil.applyDeadband(driver.getRawAxis(rotationAxis), Constants.stickDeadband)) > 0.0;
+
+	}
 }
