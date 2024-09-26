@@ -44,8 +44,13 @@ public class Robot extends TimedRobot {
 
   private RobotContainer robotContainer;
 
-  public static GenericEntry rightMotorShafelbordSpeed;
-  public static GenericEntry leftMotorShfelbordSpeed;
+  public static GenericEntry IntakeRightMotorShafelbordSpeed;
+  public static GenericEntry IntakeLeftMotorShfelbordSpeed;
+  public static GenericEntry ShooterfrontUpMotorSpeed;
+  public static GenericEntry ShooterfrontDownMotorSpeed;
+  public static GenericEntry ShooterBackDownMotorSpeed;
+  public static GenericEntry KickerMotorShafelbordSpeed;
+  public static GenericEntry shooterAngel;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -145,12 +150,29 @@ public class Robot extends TimedRobot {
   }
 
   public void smartDashboard() {
-    rightMotorShafelbordSpeed = Shuffleboard.getTab("Intake").add("rightSpeed", 0.1)
+    KickerMotorShafelbordSpeed = Shuffleboard.getTab("Kicker").add("Speed", 0.1)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
-    leftMotorShfelbordSpeed = Shuffleboard.getTab("Intake").add("leftSpeed", 0.1)
+    IntakeRightMotorShafelbordSpeed = Shuffleboard.getTab("Intake").add("rightSpeed", 0.1)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
+    IntakeLeftMotorShfelbordSpeed = Shuffleboard.getTab("Intake").add("leftSpeed", 0.1)
+        .withWidget(BuiltInWidgets.kTextView)
+        .getEntry();
+    ShooterfrontUpMotorSpeed = Shuffleboard.getTab("Shooter").add("ShooterfrontUpMotorSpeed", 0)
+        .withWidget(BuiltInWidgets.kTextView)
+        .getEntry();
+    shooterAngel = Shuffleboard.getTab("Shooter").add("shooter Angel", 0.1)
+        .withWidget(BuiltInWidgets.kTextView)
+        .getEntry();
+    ShooterfrontDownMotorSpeed = Shuffleboard.getTab("Shooter").add("ShooterfrontDownMotorSpeed", 0.1)
+        .withWidget(BuiltInWidgets.kTextView)
+        .getEntry();
+    ShooterBackDownMotorSpeed = Shuffleboard.getTab("Shooter").add("ShooterBackDownMotorSpeed", 0.1)
+        .withWidget(BuiltInWidgets.kTextView)
+        .getEntry();
+        
+
     // reverseTranspotation = Shuffleboard.getTab("Robot").add("reverse
     // transportation working", false)
     // .withWidget(BuiltInWidgets.kBooleanBox)

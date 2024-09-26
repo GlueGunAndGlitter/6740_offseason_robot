@@ -10,15 +10,18 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class Intake extends SubsystemBase {
 
-     CANSparkFlex rightMotor = new CANSparkFlex(Constants.ShooterConstants.NON_STATIC_MOTOR_PORT,
+     CANSparkFlex rightMotor = new CANSparkFlex(Constants.IntakeConstants.RITHT_MOTOR_ID,
       MotorType.kBrushless);
-     CANSparkFlex leftMotor = new CANSparkFlex(Constants.ShooterConstants.NON_STATIC_MOTOR_PORT,
+     CANSparkFlex leftMotor = new CANSparkFlex(Constants.IntakeConstants.LEFT_MOTOR_ID,
       MotorType.kBrushless);
   /** Creates a new Intake. */
-  public Intake() {}
+  public Intake() {
+    leftMotor.setInverted(false);
+  }
 
   private void input(double rightSpeed, double leftSpeed){
     rightMotor.set(rightSpeed);
@@ -35,8 +38,10 @@ public class Intake extends SubsystemBase {
     rightMotor.stopMotor();
   }
 
-  public Command inputCommand(double rightSpeed, double leftSpeed){
-    return this.run(() -> input(rightSpeed,leftSpeed));
+  public Command inputCommand(){
+    return this.run(() -> input(
+      Robot.IntakeRightMotorShafelbordSpeed.getDouble(0),
+      Robot.IntakeLeftMotorShfelbordSpeed.getDouble(0)));
   }
 
   public Command outputCommand(double rightSpeed, double leftSpeed){

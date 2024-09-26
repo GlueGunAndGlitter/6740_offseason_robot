@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.ctre.phoenix6.signals.AppliedRotorPolarityValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -17,8 +18,10 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.commands.driveCommands.TeleopSwerve;
+import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.*;
+import frc.robot.vision.AprilTagVision;
+import frc.robot.vision.NoteVision;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -58,6 +61,13 @@ public class RobotContainer {
 	/* Subsystems */
 	public final static Swerve swerve = new Swerve();
 	public final static Intake intake = new Intake();
+	public final static Shooter shooter = new Shooter();
+	public final static Kickers kickers = new Kickers();
+	public final static ChangeAngelShooter changeAngelShooter = new ChangeAngelShooter();
+	public final static NoteVision noteVision = new NoteVision();
+	public final static AprilTagVision aprilTagVision = new AprilTagVision();
+	
+
 
 	private final SendableChooser<Command> autoChooser;
 
@@ -92,23 +102,45 @@ public class RobotContainer {
 		/* Driver Buttons */
 		zeroGyro.onTrue(new InstantCommand(() -> swerve.zeroHeading()));
 
-		commandXBoxController.a().whileTrue(intake.inputCommand(
-			Robot.rightMotorShafelbordSpeed.getDouble(0),
-			 Robot.leftMotorShfelbordSpeed.getDouble(0)));
+		commandXBoxController.a().whileTrue(intake.inputCommand()
+		.alongWith(shooter.floorInputCommand()).alongWith(kickers.inputKickerCommand()));
 
 		
 		commandXBoxController.b().whileTrue(intake.outputCommand(
-			Robot.rightMotorShafelbordSpeed.getDouble(0),
-			 Robot.leftMotorShfelbordSpeed.getDouble(0)));
+			Robot.IntakeRightMotorShafelbordSpeed.getDouble(0),
+			Robot.IntakeLeftMotorShfelbordSpeed.getDouble(0)));
+
+		commandXBoxController.x().whileTrue(shooter.shootUpCommand()
+		.alongWith(new WaitCommand(4)
+		.andThen(kickers.outputKickerCommand())));
+
+		commandXBoxController.y().toggleOnTrue(changeAngelShooter.setRotationCommand());
+
+		commandXBoxController.back().onTrue(changeAngelShooter.zeroEncodersCommand());
+
+		commandXBoxController.rightBumper().whileTrue(changeAngelShooter.setToZeroRotationCommand());
+
+		commandXBoxController.leftBumper().whileTrue(shooter.inputCommand()
+		.alongWith(kickers.inputKickerCommand()));
+		
+
 	}
+
+
 
 	private void setDefaultCommands() {
 		swerve.setDefaultCommand(teleopSwerve(false));
 		intake.setDefaultCommand(intake.stopMotorsCommand());
+		shooter.setDefaultCommand(shooter.stopMotorsCommand());
+		kickers.setDefaultCommand(kickers.stopMotorsCommand());
+		changeAngelShooter.setDefaultCommand(changeAngelShooter.stopMotorsCommand());
+		
+
 	}
 
 	private Command teleopSwerve(boolean crossWhileNotMoving) {
 		return new TeleopSwerve(
+
 				swerve,
 				() -> -driver.getRawAxis(translationAxis),
 				() -> -driver.getRawAxis(strafeAxis),
