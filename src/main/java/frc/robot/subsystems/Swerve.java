@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
+import frc.robot.vision.AprilTagVision;
 import frc.lib.HaNavX;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -13,6 +14,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
+
+import org.photonvision.EstimatedRobotPose;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
@@ -64,8 +67,8 @@ public class Swerve extends SubsystemBase {
 
         // create all the modules
         mSwerveMods = new SwerveModule[] {
-                new SwerveModule(0, Constants.Swerve.Mod0.constants,false, false ),
-                new SwerveModule(1, Constants.Swerve.Mod1.constants,true, true ),
+                new SwerveModule(0, Constants.Swerve.Mod0.constants,false, true ),
+                new SwerveModule(1, Constants.Swerve.Mod1.constants,false, true),
                 new SwerveModule(2, Constants.Swerve.Mod2.constants, false, true),
                 new SwerveModule(3, Constants.Swerve.Mod3.constants, false, true),
         };
@@ -196,14 +199,23 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic() {
+        // Update the odometry with the standard method
         swerveOdometry.update(getGyroYaw(), getModulePositions());
 
+        // Try to use AprilTag vision data to correct the odometry
+        Optional<EstimatedRobotPose> visionPose = RobotContainer.aprilTagVision.getEstimatedGlobalPose(getPose());
+
+        // If AprilTag vision provides a valid pose, use it to reset the odometry
+        if (visionPose.isPresent()) {
+            Pose2d estimatedPose = visionPose.get().estimatedPose.toPose2d();
+            resetOdometry(estimatedPose); // Correct odometry with the vision-based pose
+        }
+
+        // Other existing periodic code...
         for (SwerveModule mod : mSwerveMods) {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
         }
-
     }
-
 }
