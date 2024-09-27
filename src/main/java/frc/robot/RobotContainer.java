@@ -111,7 +111,8 @@ public class RobotContainer {
 			Robot.IntakeLeftMotorShfelbordSpeed.getDouble(0)));
 
 		commandXBoxController.x().whileTrue(shooter.shootUpCommand()
-		.alongWith(new WaitCommand(4)
+		.alongWith(swerve.crossWheelsCommand())
+		.alongWith(new WaitCommand(3)
 		.andThen(kickers.outputKickerCommand())));
 
 		commandXBoxController.y().toggleOnTrue(changeAngelShooter.setRotationCommand());
@@ -121,8 +122,10 @@ public class RobotContainer {
 		commandXBoxController.rightBumper().whileTrue(changeAngelShooter.setToZeroRotationCommand());
 
 		commandXBoxController.leftBumper().whileTrue(shooter.inputCommand()
+		.alongWith(swerve.crossWheelsCommand())
 		.alongWith(kickers.inputKickerCommand()));
 		
+		commandXBoxController.rightTrigger().onTrue(changeAngelShooter.setAngaleCommand());
 
 	}
 

@@ -40,7 +40,7 @@ public class Kickers extends SubsystemBase {
   }
 
   public Command stopMotorsCommand(){
-    return this.run(() -> stopMotors());
+    return this.run(() -> stopMotors());  
   }
 
 

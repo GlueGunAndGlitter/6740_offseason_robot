@@ -14,7 +14,7 @@ public class NoteVision {
     public NoteVision() {
 
         // set photonvision camera
-        notesCamera = new PhotonCamera("Notes-Limelight");
+        notesCamera = new PhotonCamera("dsds");
     }
 
     // get the angel from the camera th the note if dose not see note return 0

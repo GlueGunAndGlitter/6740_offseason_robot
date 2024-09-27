@@ -10,21 +10,36 @@ import javax.crypto.spec.GCMParameterSpec;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 
 public class ChangeAngelShooter extends SubsystemBase {
   TalonFX rightAngelMotor = new TalonFX(Constants.AngelChangeConstants.RIGHT_ANGEL_MOTOR_ID);
   TalonFX leftAngelMotor = new TalonFX(Constants.AngelChangeConstants.LEFT_ANGEL_MOTOR_ID);
   
   PIDController rotatePID = new PIDController(0.2, 0, 0);
+
+  InterpolatingDoubleTreeMap estimatedAngle = new InterpolatingDoubleTreeMap();
+
+  double angle = 0;
   /** Creates a new ChangeAngelShooter. */
   public ChangeAngelShooter() {
+    putData();
     leftAngelMotor.setInverted(true);
   }
 
+
+  private void setAngle(){
+    angle = estimatedAngle.get(RobotContainer.swerve.calculateDesinence());
+  }
+
+  public Command setAngaleCommand(){
+    return this.run(()-> setAngle());
+  }
 
   private void zeroEncoder(){
     leftAngelMotor.setPosition(0);
@@ -33,8 +48,8 @@ public class ChangeAngelShooter extends SubsystemBase {
   
 
   private void setRotaion(){
-    double rotaion = (double) Robot.shooterAngel.getDouble(0) / 2;
-    System.out.println(rotaion);
+    // double rotaion = (double) Robot.shooterAngel.getDouble(0) / 2;
+    double rotaion = (angle / 2);
     if (rotatePID.calculate(leftAngelMotor.getPosition().getValue(),rotaion) > 0.5){
       leftAngelMotor.set(0.5);
       rightAngelMotor.set(0.5);
@@ -68,7 +83,14 @@ public class ChangeAngelShooter extends SubsystemBase {
       rightAngelMotor.set(rotatePID.calculate(rightAngelMotor.getPosition().getValue(),0));
     }
   }
+  
 
+  private void putData(){
+      estimatedAngle.put(3.305,38.0);
+      estimatedAngle.put(4.46, 25.5);
+      estimatedAngle.put(3.9, 30.0);
+      estimatedAngle.put(4.9, 24.7);
+  }
 
    public Command setToZeroRotationCommand(){
     return this.run(() -> setToZeroRotations());
@@ -84,9 +106,10 @@ public class ChangeAngelShooter extends SubsystemBase {
   public Command zeroEncodersCommand(){
     return this.run(() -> zeroEncoder());
   }
+
+  
   @Override
   public void periodic() {
-    // System.out.println(rotatePID.calculate(leftAngelMotor.getPosition().getValue(),0));
-    // System.out.println("left: " + leftAngelMotor.getPosition() + "right: " + rightAngelMotor.getPosition());
+    // System.out.println(estimatedAngle.get(RobotContainer.swerve.calculateDesinence()));
   }
 }

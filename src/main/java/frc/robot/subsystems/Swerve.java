@@ -16,6 +16,8 @@ import java.util.Optional;
 import java.util.function.DoubleSupplier;
 
 import org.photonvision.EstimatedRobotPose;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
@@ -24,11 +26,15 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Swerve extends SubsystemBase {
+
+    private final Field2d m_field;
 
     // create swere drive Odomtry object
     public SwerveDriveOdometry swerveOdometry;
@@ -36,11 +42,16 @@ public class Swerve extends SubsystemBase {
     // create swere module object
     public SwerveModule[] mSwerveMods;
 
+
     // create navex object
     private final HaNavX gyro;
 
     public Swerve() {
-        // give the path plathplaner all the metheds that he needs
+
+        m_field = new Field2d();
+        SmartDashboard.putData("Field", m_field);
+
+        // give the path plat  hplaner all the metheds that he needs
         AutoBuilder.configureHolonomic(
                 this::getPose,
                 this::resetOdometry,
@@ -166,6 +177,12 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+
+    public double calculateDesinence(){
+        Pose2d cerentPose2d = getPose();
+        return Math.sqrt((Math.pow((16.793 - cerentPose2d.getX()), 2)) + (Math.pow(5.5478 - cerentPose2d.getY(), 2)) + (Math.pow(1.98, 2)));
+    }
+
     public void crossWheels() {
         SwerveModuleState[] crossStates = {
                 new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
@@ -198,24 +215,34 @@ public class Swerve extends SubsystemBase {
     }
 
     @Override
-    public void periodic() {
+    public void periodic() {  
+        System.out.println(getPose() + "dectece: " + calculateDesinence());
+
+
+
+        m_field.setRobotPose(getPose());
+
+
+
         // Update the odometry with the standard method
         swerveOdometry.update(getGyroYaw(), getModulePositions());
-
         // Try to use AprilTag vision data to correct the odometry
         Optional<EstimatedRobotPose> visionPose = RobotContainer.aprilTagVision.getEstimatedGlobalPose(getPose());
-
+    
         // If AprilTag vision provides a valid pose, use it to reset the odometry
+
         if (visionPose.isPresent()) {
+            
             Pose2d estimatedPose = visionPose.get().estimatedPose.toPose2d();
             resetOdometry(estimatedPose); // Correct odometry with the vision-based pose
         }
-
-        // Other existing periodic code...
+    
+       // Other existing periodic code...
         for (SwerveModule mod : mSwerveMods) {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
         }
     }
+    
 }

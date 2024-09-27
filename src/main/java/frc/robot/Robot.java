@@ -150,7 +150,7 @@ public class Robot extends TimedRobot {
   }
 
   public void smartDashboard() {
-    KickerMotorShafelbordSpeed = Shuffleboard.getTab("Kicker").add("Speed", 0.1)
+    KickerMotorShafelbordSpeed = Shuffleboard.getTab("Kicker").add("Speed", 1)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     IntakeRightMotorShafelbordSpeed = Shuffleboard.getTab("Intake").add("rightSpeed", 0.1)
@@ -159,16 +159,16 @@ public class Robot extends TimedRobot {
     IntakeLeftMotorShfelbordSpeed = Shuffleboard.getTab("Intake").add("leftSpeed", 0.1)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
-    ShooterfrontUpMotorSpeed = Shuffleboard.getTab("Shooter").add("ShooterfrontUpMotorSpeed", 0)
+    ShooterfrontUpMotorSpeed = Shuffleboard.getTab("Shooter").add("ShooterfrontUpMotorSpeed", 1)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
-    shooterAngel = Shuffleboard.getTab("Shooter").add("shooter Angel", 0.1)
+    shooterAngel = Shuffleboard.getTab("Shooter").add("shooter Angel", 0)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
-    ShooterfrontDownMotorSpeed = Shuffleboard.getTab("Shooter").add("ShooterfrontDownMotorSpeed", 0.1)
+    ShooterfrontDownMotorSpeed = Shuffleboard.getTab("Shooter").add("ShooterfrontDownMotorSpeed", 1)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
-    ShooterBackDownMotorSpeed = Shuffleboard.getTab("Shooter").add("ShooterBackDownMotorSpeed", 0.1)
+    ShooterBackDownMotorSpeed = Shuffleboard.getTab("Shooter").add("ShooterBackDownMotorSpeed",1 )
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
         

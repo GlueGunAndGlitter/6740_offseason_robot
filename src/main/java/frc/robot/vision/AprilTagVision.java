@@ -23,10 +23,9 @@ import edu.wpi.first.math.geometry.Translation3d;
 public class AprilTagVision {
 
     // create photonvision camera 
-    PhotonCamera aprilTagsCamera = new PhotonCamera("AprilTags-Camera");
+    PhotonCamera aprilTagsCamera = new PhotonCamera("Notes-Limelight");
     AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-    Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-
+    Transform3d robotToCam = new Transform3d(new Translation3d(0.3, 0.0, 0.07), new Rotation3d(0,0,0)); // meter
     // Construct PhotonPoseEstimator
     PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, aprilTagsCamera, robotToCam);
 
@@ -90,7 +89,7 @@ public class AprilTagVision {
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-        photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-        return photonPoseEstimator.update();
+            photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+                return photonPoseEstimator.update();
     }
 }
