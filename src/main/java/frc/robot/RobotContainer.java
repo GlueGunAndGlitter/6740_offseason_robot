@@ -6,6 +6,9 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.PubSub;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -18,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.automations.LineWithSpeaker;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.*;
 import frc.robot.vision.AprilTagVision;
@@ -33,6 +37,8 @@ import frc.robot.vision.NoteVision;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+
+	public static double angle = 0;
 
 	// veriabels
 	public static double destenceFromAprilTag = 10;
@@ -102,8 +108,10 @@ public class RobotContainer {
 		/* Driver Buttons */
 		zeroGyro.onTrue(new InstantCommand(() -> swerve.zeroHeading()));
 
-		commandXBoxController.a().whileTrue(intake.inputCommand()
-		.alongWith(shooter.floorInputCommand()).alongWith(kickers.inputKickerCommand()));
+		 commandXBoxController.a().whileTrue(swerve.test());
+		 
+		 //.whileTrue(intake.inputCommand()
+		// .alongWith(shooter.floorInputCommand()).alongWith(kickers.inputKickerCommand()));
 
 		
 		commandXBoxController.b().whileTrue(intake.outputCommand(
@@ -127,6 +135,10 @@ public class RobotContainer {
 		
 		commandXBoxController.rightTrigger().onTrue(changeAngelShooter.setAngaleCommand());
 
+		commandXBoxController.leftTrigger().whileTrue(new LineWithSpeaker(
+		() -> -driver.getRawAxis(translationAxis),
+		() -> -driver.getRawAxis(strafeAxis),
+		() -> -driver.getRawAxis(rotationAxis)));
 	}
 
 
@@ -172,4 +184,5 @@ public class RobotContainer {
 				Math.abs(MathUtil.applyDeadband(driver.getRawAxis(rotationAxis), Constants.stickDeadband)) > 0.0;
 
 	}
+
 }

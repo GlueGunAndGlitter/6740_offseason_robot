@@ -149,7 +149,7 @@ public class Swerve extends SubsystemBase {
 
 
     public void resetOdometry(Pose2d pose) {
-        setHeading(pose.getRotation().unaryMinus());
+        // setHeading(pose.getRotation().unaryMinus());
         swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), pose);
     }
 
@@ -177,6 +177,22 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    private static void caculateAngle(){
+        Pose2d robotPose = RobotContainer.swerve.getPose();
+        double m;
+        if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue){
+         m = (robotPose.getY() - 5.5478)/(robotPose.getX() + 0.0381);
+         RobotContainer.angle = (180 -Math.toDegrees(Math.atan(m)));
+        }else{
+         m =(robotPose.getY() - 5.5478)/(robotPose.getX() - 16.5793);
+        //  System.out.println("m: " + m + " and: " + (180 + Math.toDegrees(Math.atan(m))));
+          RobotContainer.angle = (180 + Math.toDegrees(Math.atan(m)));
+        }
+     }
+
+     public Command test(){
+        return this.run(()-> caculateAngle());
+     }
 
     public double calculateDesinence(){
         Pose2d cerentPose2d = getPose();
@@ -216,9 +232,12 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic() {  
-        System.out.println(getPose() + "dectece: " + calculateDesinence());
-
-
+        // Pose2d robotPose = RobotContainer.swerve.getPose();
+        System.out.println(RobotContainer.angle);
+        // System.out.println(getPose() + "dectece: " + calculateDesinence());
+        // System.out.println(Math.IEEEremainder(getHeading().getDegrees(),360));
+        // System.out.println("m: " +(robotPose.getY() - 5.5478)/(robotPose.getX() - 16.5793) + " angle: " 
+        // + Math.toDegrees(Math.atan((robotPose.getY() - 5.5478)/(robotPose.getX() - 16.5793))) + " angle 2: " + Math.IEEEremainder(180 + Math.toDegrees(Math.atan((robotPose.getY() - 5.5478)/(robotPose.getX() - 16.5793))),360));
 
         m_field.setRobotPose(getPose());
 

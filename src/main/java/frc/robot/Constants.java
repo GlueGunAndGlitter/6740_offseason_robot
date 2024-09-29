@@ -41,8 +41,8 @@ public final class Constants {
     public class LineWithSpeakerConstants {
 
         public static final double TOLERANCE_OF_DGREE = 4;
-        public static final double KP = 0.0055;
-        public static final double KD = 0.00055;
+        public static final double KP = 0.009;
+        public static final double KD = 0.0009;
 
     }
 
