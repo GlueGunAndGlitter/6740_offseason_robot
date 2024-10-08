@@ -20,7 +20,8 @@ public class Intake extends SubsystemBase {
       MotorType.kBrushless);
   /** Creates a new Intake. */
   public Intake() {
-    leftMotor.setInverted(false);
+    leftMotor.setInverted(true);
+    rightMotor.setInverted(false);
   }
 
   private void input(double rightSpeed, double leftSpeed){

@@ -191,7 +191,7 @@ public class Swerve extends SubsystemBase {
      }
 
      public Command test(){
-        return this.run(()-> caculateAngle());
+        return this.runOnce(()-> caculateAngle());
      }
 
     public double calculateDesinence(){
@@ -232,13 +232,9 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic() {  
-        // Pose2d robotPose = RobotContainer.swerve.getPose();
-        System.out.println(RobotContainer.angle);
-        // System.out.println(getPose() + "dectece: " + calculateDesinence());
-        // System.out.println(Math.IEEEremainder(getHeading().getDegrees(),360));
-        // System.out.println("m: " +(robotPose.getY() - 5.5478)/(robotPose.getX() - 16.5793) + " angle: " 
-        // + Math.toDegrees(Math.atan((robotPose.getY() - 5.5478)/(robotPose.getX() - 16.5793))) + " angle 2: " + Math.IEEEremainder(180 + Math.toDegrees(Math.atan((robotPose.getY() - 5.5478)/(robotPose.getX() - 16.5793))),360));
-
+        // System.out.println(RobotContainer.angle);
+        // System.out.println("dectece: " + calculateDesinence() + " shit dectence: " + Math.sqrt((Math.pow((16.793 - robotPose.getX()), 2)) + (Math.pow(5.5478 - robotPose.getY(), 2))));
+  
         m_field.setRobotPose(getPose());
 
 

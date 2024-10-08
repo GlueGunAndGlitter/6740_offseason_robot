@@ -153,10 +153,10 @@ public class Robot extends TimedRobot {
     KickerMotorShafelbordSpeed = Shuffleboard.getTab("Kicker").add("Speed", 1)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
-    IntakeRightMotorShafelbordSpeed = Shuffleboard.getTab("Intake").add("rightSpeed", 0.1)
+    IntakeRightMotorShafelbordSpeed = Shuffleboard.getTab("Intake").add("rightSpeed", 1)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
-    IntakeLeftMotorShfelbordSpeed = Shuffleboard.getTab("Intake").add("leftSpeed", 0.1)
+    IntakeLeftMotorShfelbordSpeed = Shuffleboard.getTab("Intake").add("leftSpeed", 1)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     ShooterfrontUpMotorSpeed = Shuffleboard.getTab("Shooter").add("ShooterfrontUpMotorSpeed", 1)

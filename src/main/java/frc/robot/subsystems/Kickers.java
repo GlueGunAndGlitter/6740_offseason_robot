@@ -13,22 +13,25 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 
 public class Kickers extends SubsystemBase {
-       CANSparkFlex MotorKicker = new CANSparkFlex(Constants.KickersConstans.KICKER_MOTOR_ID,
+       CANSparkFlex motorKicker = new CANSparkFlex(Constants.KickersConstans.KICKER_MOTOR_ID,
       MotorType.kBrushless);
     
   /** Creates a new Kickers. */
-  public Kickers() {}
+  public Kickers() {
+    motorKicker.setInverted(true);
+  }
+
 
   private void inputKicker(){
-    MotorKicker.set(Robot.IntakeLeftMotorShfelbordSpeed.getDouble(0));
+    motorKicker.set(Robot.KickerMotorShafelbordSpeed.getDouble(0));
   }
 
   private void outputKicker(){
-    MotorKicker.set(-Robot.IntakeLeftMotorShfelbordSpeed.getDouble(0));
+    motorKicker.set(-Robot.KickerMotorShafelbordSpeed.getDouble(0));
   }
 
   private void stopMotors(){
-    MotorKicker.stopMotor();
+    motorKicker.stopMotor();
   }
 
   public Command inputKickerCommand() {
@@ -47,5 +50,6 @@ public class Kickers extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    
   }
 }

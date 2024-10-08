@@ -107,38 +107,23 @@ public class RobotContainer {
 
 		/* Driver Buttons */
 		zeroGyro.onTrue(new InstantCommand(() -> swerve.zeroHeading()));
-
-		 commandXBoxController.a().whileTrue(swerve.test());
-		 
-		 //.whileTrue(intake.inputCommand()
-		// .alongWith(shooter.floorInputCommand()).alongWith(kickers.inputKickerCommand()));
-
 		
-		commandXBoxController.b().whileTrue(intake.outputCommand(
-			Robot.IntakeRightMotorShafelbordSpeed.getDouble(0),
-			Robot.IntakeLeftMotorShfelbordSpeed.getDouble(0)));
-
-		commandXBoxController.x().whileTrue(shooter.shootUpCommand()
-		.alongWith(swerve.crossWheelsCommand())
-		.alongWith(new WaitCommand(3)
-		.andThen(kickers.outputKickerCommand())));
-
-		commandXBoxController.y().toggleOnTrue(changeAngelShooter.setRotationCommand());
-
+		// angle change Buttons
 		commandXBoxController.back().onTrue(changeAngelShooter.zeroEncodersCommand());
 
-		commandXBoxController.rightBumper().whileTrue(changeAngelShooter.setToZeroRotationCommand());
+		commandXBoxController.rightBumper().toggleOnTrue(changeAngelShooter.setRotationCommand());
 
-		commandXBoxController.leftBumper().whileTrue(shooter.inputCommand()
-		.alongWith(swerve.crossWheelsCommand())
+
+		//intake Buttons
+		commandXBoxController.leftBumper().whileTrue(intake.inputCommand()
+		.alongWith(shooter.floorInputCommand())
 		.alongWith(kickers.inputKickerCommand()));
-		
-		commandXBoxController.rightTrigger().onTrue(changeAngelShooter.setAngaleCommand());
 
-		commandXBoxController.leftTrigger().whileTrue(new LineWithSpeaker(
-		() -> -driver.getRawAxis(translationAxis),
-		() -> -driver.getRawAxis(strafeAxis),
-		() -> -driver.getRawAxis(rotationAxis)));
+		//shooter
+		commandXBoxController.x().whileTrue(shooter.shootUpCommand()
+		.alongWith(new WaitCommand(2)
+		.andThen(kickers.outputKickerCommand())));
+	
 	}
 
 
@@ -148,7 +133,7 @@ public class RobotContainer {
 		intake.setDefaultCommand(intake.stopMotorsCommand());
 		shooter.setDefaultCommand(shooter.stopMotorsCommand());
 		kickers.setDefaultCommand(kickers.stopMotorsCommand());
-		changeAngelShooter.setDefaultCommand(changeAngelShooter.stopMotorsCommand());
+		changeAngelShooter.setDefaultCommand(changeAngelShooter.setToZeroRotationCommand());
 		
 
 	}

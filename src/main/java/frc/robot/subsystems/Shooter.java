@@ -38,7 +38,9 @@ public class Shooter extends SubsystemBase {
   
   public Shooter() {
     
-    frontDownMotor.setInverted(true);
+    frontDownMotor.setInverted(false);
+    frontUpMotor.setInverted(false);
+    backDownMotor.setInverted(true);
 
 
   }
@@ -56,12 +58,18 @@ public class Shooter extends SubsystemBase {
   }
 
   private void floorInput(){
-    frontUpMotor.set(-Robot.ShooterfrontUpMotorSpeed.getDouble(0) + 0.3);
-    frontDownMotor.set(Robot.ShooterfrontDownMotorSpeed.getDouble(0) - 0.3);
-    backDownMotor.set(-Robot.ShooterBackDownMotorSpeed.getDouble(0) + 0.3);
+    frontUpMotor.set(-Robot.ShooterfrontUpMotorSpeed.getDouble(0) );
+    frontDownMotor.set(Robot.ShooterfrontDownMotorSpeed.getDouble(0));
+    backDownMotor.set(-Robot.ShooterBackDownMotorSpeed.getDouble(0));
   }
 
-  
+  private void ampShot(){
+    frontUpMotor.set(-Robot.ShooterfrontUpMotorSpeed.getDouble(0)+0.5);
+    frontDownMotor.set(Robot.ShooterfrontDownMotorSpeed.getDouble(0)-0.5);
+    backDownMotor.set(Robot.ShooterBackDownMotorSpeed.getDouble(0)-0.6);
+  }
+
+
   public Command shootUpCommand(){
     return this.run(() -> shootUp());
   }
@@ -73,6 +81,11 @@ public class Shooter extends SubsystemBase {
   public Command floorInputCommand(){
     return this.run(() -> floorInput());
   }
+
+  public Command ampshotCommand(){
+    return this.run(() -> shootUp());
+  }
+
   
   
   //public Command intakeShooterCommand(){

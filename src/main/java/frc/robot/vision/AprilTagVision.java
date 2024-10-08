@@ -25,7 +25,9 @@ public class AprilTagVision {
     // create photonvision camera 
     PhotonCamera aprilTagsCamera = new PhotonCamera("Notes-Limelight");
     AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-    Transform3d robotToCam = new Transform3d(new Translation3d(0.3, 0.0, 0.07), new Rotation3d(0,0,0)); // meter
+    Transform3d robotToCam = new Transform3d(new Translation3d(-0.3, 0.0, 0.07), new Rotation3d(0
+
+    ,0,0)); // meter
     // Construct PhotonPoseEstimator
     PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, aprilTagsCamera, robotToCam);
 
