@@ -39,28 +39,30 @@ public class Shooter extends SubsystemBase {
   public Shooter() {
     
     frontDownMotor.setInverted(false);
-    frontUpMotor.setInverted(false);
-    backDownMotor.setInverted(true);
+    frontUpMotor.setInverted(true);
+    backDownMotor.setInverted(false);
 
 
   }
    
+
   private void shootUp(){
     frontUpMotor.set(Robot.ShooterfrontUpMotorSpeed.getDouble(0));
     frontDownMotor.set(Robot.ShooterfrontDownMotorSpeed.getDouble(0));
-    backDownMotor.set(Robot.ShooterBackDownMotorSpeed.getDouble(0));
+    backDownMotor.set(-
+    Robot.ShooterBackDownMotorSpeed.getDouble(0));
   }
 
-  private void input(){
+  private void insert(){
     frontUpMotor.set(-Robot.ShooterfrontUpMotorSpeed.getDouble(0)-0.5);
     frontDownMotor.set(-Robot.ShooterfrontDownMotorSpeed.getDouble(0)-0.5);
-    backDownMotor.set(-Robot.ShooterBackDownMotorSpeed.getDouble(0)-0.5);
+    backDownMotor.set(Robot.ShooterBackDownMotorSpeed.getDouble(0)-0.5);
   }
 
   private void floorInput(){
     frontUpMotor.set(-Robot.ShooterfrontUpMotorSpeed.getDouble(0) );
-    frontDownMotor.set(Robot.ShooterfrontDownMotorSpeed.getDouble(0));
-    backDownMotor.set(-Robot.ShooterBackDownMotorSpeed.getDouble(0));
+    frontDownMotor.set(Robot.ShooterfrontDownMotorSpeed.getDouble(0)-0.5);
+    backDownMotor.set(-Robot.ShooterBackDownMotorSpeed.getDouble(0)+0.3);
   }
 
   private void ampShot(){
@@ -74,8 +76,8 @@ public class Shooter extends SubsystemBase {
     return this.run(() -> shootUp());
   }
 
-  public Command inputCommand(){
-    return this.run(() -> input());
+  public Command insertCommand(){
+    return this.run(() -> insert());
   }
 
   public Command floorInputCommand(){

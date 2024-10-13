@@ -6,17 +6,12 @@ package frc.robot.automations;
 
 import java.util.function.DoubleSupplier;
 
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest.RobotCentric;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.Constants.Swerve;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -32,15 +27,20 @@ public class LineWithSpeaker extends PIDCommand {
           // This should return the measurement
           () -> Math.IEEEremainder(RobotContainer.swerve.getHeading().getDegrees(), 360),
           // This should return the setpoint (can also be a constant)
-          () -> Math.IEEEremainder(RobotContainer.angle,360),
+          () -> Math.IEEEremainder(RobotContainer.alineWithSpeakerAngel,360),
           // This uses the output
           output -> {
-      
             // Use the output here
+            double err = Math.IEEEremainder(RobotContainer.swerve.getHeading().getDegrees(), 360) - Math.IEEEremainder(RobotContainer.alineWithSpeakerAngel,360);
+            double alternativeOutput = 2;
+            if (Math.abs(err) > 180){
+              alternativeOutput = (360 + err *  (Math.abs(Math.IEEEremainder(RobotContainer.alineWithSpeakerAngel,360))/ Math.IEEEremainder(RobotContainer.alineWithSpeakerAngel,360))) * 0.009;
+              alternativeOutput = alternativeOutput * -(Math.abs(Math.IEEEremainder(RobotContainer.alineWithSpeakerAngel,360))/ Math.IEEEremainder(RobotContainer.alineWithSpeakerAngel,360));
+            }
+            output = Math.min(Math.abs(alternativeOutput), Math.abs(output));
             // apply deadband
             double translationVal = MathUtil.applyDeadband(translationX.getAsDouble(), Constants.stickDeadband);
             double strafeVal = MathUtil.applyDeadband(translationY.getAsDouble(), Constants.stickDeadband);
-
 
             RobotContainer.swerve.drive(
             new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed),
@@ -56,6 +56,6 @@ public class LineWithSpeaker extends PIDCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+      return false;
   }
 }

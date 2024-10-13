@@ -177,21 +177,21 @@ public class Swerve extends SubsystemBase {
         }
     }
 
-    private static void caculateAngle(){
+    private static void setAlineWithSpeakerAngel(){
         Pose2d robotPose = RobotContainer.swerve.getPose();
         double m;
         if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue){
          m = (robotPose.getY() - 5.5478)/(robotPose.getX() + 0.0381);
-         RobotContainer.angle = (180 -Math.toDegrees(Math.atan(m)));
+         RobotContainer.alineWithSpeakerAngel = (180 -Math.toDegrees(Math.atan(m)));
         }else{
          m =(robotPose.getY() - 5.5478)/(robotPose.getX() - 16.5793);
         //  System.out.println("m: " + m + " and: " + (180 + Math.toDegrees(Math.atan(m))));
-          RobotContainer.angle = (180 + Math.toDegrees(Math.atan(m)));
+          RobotContainer.alineWithSpeakerAngel = (180 + Math.toDegrees(Math.atan(m)));
         }
      }
 
-     public Command test(){
-        return this.runOnce(()-> caculateAngle());
+     public Command setAlineWithSpeakerAngelCommand(){
+        return this.runOnce(()-> setAlineWithSpeakerAngel());
      }
 
     public double calculateDesinence(){

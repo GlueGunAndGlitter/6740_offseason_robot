@@ -38,7 +38,7 @@ import frc.robot.vision.NoteVision;
  */
 public class RobotContainer {
 
-	public static double angle = 0;
+	public static double alineWithSpeakerAngel = 0;
 
 	// veriabels
 	public static double destenceFromAprilTag = 10;
@@ -111,18 +111,39 @@ public class RobotContainer {
 		// angle change Buttons
 		commandXBoxController.back().onTrue(changeAngelShooter.zeroEncodersCommand());
 
-		commandXBoxController.rightBumper().toggleOnTrue(changeAngelShooter.setRotationCommand());
+		commandXBoxController.rightBumper()
+		.whileTrue(swerve.setAlineWithSpeakerAngelCommand()
+		.andThen(changeAngelShooter.setTargetAngaleCommand()
+		.andThen(changeAngelShooter.setRotationCommand()
+		.alongWith(new LineWithSpeaker(
+			() -> -driver.getRawAxis(translationAxis),
+			() -> -driver.getRawAxis(strafeAxis),
+			() -> -driver.getRawAxis(rotationAxis)))
+			)));
 
 
 		//intake Buttons
-		commandXBoxController.leftBumper().whileTrue(intake.inputCommand()
-		.alongWith(shooter.floorInputCommand())
-		.alongWith(kickers.inputKickerCommand()));
+		commandXBoxController.leftBumper().whileTrue(
+			intake.inputCommand()
+			.alongWith(shooter.floorInputCommand())
+			.alongWith(changeAngelShooter.setTargetAngaleCommand()));
 
 		//shooter
 		commandXBoxController.x().whileTrue(shooter.shootUpCommand()
-		.alongWith(new WaitCommand(2)
+		.alongWith(new WaitCommand(2.5)
 		.andThen(kickers.outputKickerCommand())));
+
+
+		commandXBoxController.b().whileTrue(shooter.insertCommand());
+
+		// commandXBoxController.rightTrigger().onTrue(swerve.test());
+		commandXBoxController.leftTrigger().whileTrue(new LineWithSpeaker(
+				() -> -driver.getRawAxis(translationAxis),
+				() -> -driver.getRawAxis(strafeAxis),
+				() -> -driver.getRawAxis(rotationAxis)));
+		
+		commandXBoxController.a().toggleOnTrue(changeAngelShooter.setRotationCommand());
+		
 	
 	}
 
