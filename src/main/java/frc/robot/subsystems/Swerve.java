@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
-import frc.robot.vision.AprilTagVision;
 import frc.lib.HaNavX;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -26,8 +25,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -98,7 +95,7 @@ public class Swerve extends SubsystemBase {
                         : new ChassisSpeeds(
                                 translation.getX(),
                                 translation.getY(),
-                                rotation));
+                                rotation),Constants.Swerve.robotCenterTranslation);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
 
         for (SwerveModule mod : mSwerveMods) {
@@ -112,14 +109,14 @@ public class Swerve extends SubsystemBase {
         // invers the rotaion 
         speeds.omegaRadiansPerSecond = speeds.omegaRadiansPerSecond * -1;
 
-        SwerveModuleState[] states = Constants.Swerve.swerveKinematics.toSwerveModuleStates(speeds);
+        SwerveModuleState[] states = Constants.Swerve.swerveKinematics.toSwerveModuleStates(speeds, Constants.Swerve.robotCenterTranslation);
         DriverStation.reportWarning(Double.toString(speeds.omegaRadiansPerSecond), false);
-        setModuleStates(states);
-    }
+            setModuleStates(states);
+        }
 
-    /* Used by SwerveControllerCommand in Auto */
+        /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
+            SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
 
         for (SwerveModule mod : mSwerveMods) {
             mod.setDesiredState(desiredStates[mod.moduleNumber], false);
@@ -167,7 +164,6 @@ public class Swerve extends SubsystemBase {
 
     public Rotation2d getGyroYaw() {
         return Rotation2d.fromDegrees(gyro.getYawAngleDeg());
-        // return gyro.getYaw();
     }
 
     public void resetModulesToAbsolute() {
@@ -180,22 +176,28 @@ public class Swerve extends SubsystemBase {
     private static void setAlineWithSpeakerAngel(){
         Pose2d robotPose = RobotContainer.swerve.getPose();
         double m;
+        double angle;
         if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue){
          m = (robotPose.getY() - 5.5478)/(robotPose.getX() + 0.0381);
-         RobotContainer.alineWithSpeakerAngel = (180 -Math.toDegrees(Math.atan(m)));
+         angle= (180 -Math.toDegrees(Math.atan(m)));
         }else{
          m =(robotPose.getY() - 5.5478)/(robotPose.getX() - 16.5793);
         //  System.out.println("m: " + m + " and: " + (180 + Math.toDegrees(Math.atan(m))));
-          RobotContainer.alineWithSpeakerAngel = (180 + Math.toDegrees(Math.atan(m)));
+        angle = (180 + Math.toDegrees(Math.atan(m)));
         }
+
+        RobotContainer.alineWithSpeakerAngel = angle;
      }
 
      public Command setAlineWithSpeakerAngelCommand(){
         return this.runOnce(()-> setAlineWithSpeakerAngel());
      }
 
-    public double calculateDesinence(){
+    public double calculateDesinenceFromSpeaker(){
         Pose2d cerentPose2d = getPose();
+        if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue){
+            return Math.sqrt((Math.pow((-0.0381 - cerentPose2d.getX()), 2)) + (Math.pow(5.5478 - cerentPose2d.getY(), 2)) + (Math.pow(1.98, 2)));
+        }
         return Math.sqrt((Math.pow((16.793 - cerentPose2d.getX()), 2)) + (Math.pow(5.5478 - cerentPose2d.getY(), 2)) + (Math.pow(1.98, 2)));
     }
 
@@ -218,22 +220,12 @@ public class Swerve extends SubsystemBase {
         return Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
     }
 
-    public Command driveForwordInRobotRelativCommand(DoubleSupplier translationX, DoubleSupplier translationY,
-            DoubleSupplier rotationSup) {
-        double strafeVal = MathUtil.applyDeadband(translationY.getAsDouble(), Constants.stickDeadband);
-        double rotationVal = -MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
-
-        return this.run(() -> drive(
-                new Translation2d(-0.3, strafeVal).times(Constants.Swerve.maxSpeed),
-                rotationVal * Constants.Swerve.maxAngularVelocity,
-                false,
-                true));
-    }
-
     @Override
     public void periodic() {  
         // System.out.println(RobotContainer.angle);
-        // System.out.println("dectece: " + calculateDesinence() + " shit dectence: " + Math.sqrt((Math.pow((16.793 - robotPose.getX()), 2)) + (Math.pow(5.5478 - robotPose.getY(), 2))));
+
+        Pose2d robotPose = getPose();
+        // System.out.println( Math.sqrt((Math.pow((16.793 - robotPose.getX()), 2)) + (Math.pow(5.5478 - robotPose.getY(), 2))));
   
         m_field.setRobotPose(getPose());
 
@@ -242,13 +234,15 @@ public class Swerve extends SubsystemBase {
         // Update the odometry with the standard method
         swerveOdometry.update(getGyroYaw(), getModulePositions());
         // Try to use AprilTag vision data to correct the odometry
-        Optional<EstimatedRobotPose> visionPose = RobotContainer.aprilTagVision.getEstimatedGlobalPose(getPose());
+        Optional<Pose2d> visionPose = RobotContainer.aprilTagVision.getEstimatedGlobalPose(getPose());
     
         // If AprilTag vision provides a valid pose, use it to reset the odometry
 
+        // System.out.println(RobotContainer.alineWithSpeakerAngel +  "    " +  getHeading().getDegrees());
+
         if (visionPose.isPresent()) {
             
-            Pose2d estimatedPose = visionPose.get().estimatedPose.toPose2d();
+            Pose2d estimatedPose = visionPose.get();
             resetOdometry(estimatedPose); // Correct odometry with the vision-based pose
         }
     

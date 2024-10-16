@@ -19,6 +19,9 @@ public class Kickers extends SubsystemBase {
   /** Creates a new Kickers. */
   public Kickers() {
     motorKicker.setInverted(true);
+
+    motorKicker.setSmartCurrentLimit(40);
+    motorKicker.setSecondaryCurrentLimit(50);
   }
 
 
@@ -49,6 +52,7 @@ public class Kickers extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // System.out.println(motorKicker.getMotorTemperature());
     // This method will be called once per scheduler run
     
   }

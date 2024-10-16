@@ -6,7 +6,6 @@ package frc.robot;
 
 import java.util.List;
 
-import org.photonvision.PhotonCamera;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;

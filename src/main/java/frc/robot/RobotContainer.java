@@ -1,14 +1,7 @@
 package frc.robot;
 
-import com.ctre.phoenix6.signals.AppliedRotorPolarityValue;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.networktables.PubSub;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -17,7 +10,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -114,36 +106,50 @@ public class RobotContainer {
 		commandXBoxController.rightBumper()
 		.whileTrue(swerve.setAlineWithSpeakerAngelCommand()
 		.andThen(changeAngelShooter.setTargetAngaleCommand()
-		.andThen(changeAngelShooter.setRotationCommand()
-		.alongWith(new LineWithSpeaker(
-			() -> -driver.getRawAxis(translationAxis),
-			() -> -driver.getRawAxis(strafeAxis),
-			() -> -driver.getRawAxis(rotationAxis)))
-			)));
+		.andThen(changeAngelShooter.setAngleCommand()
+		.alongWith(shooter.shootUpCommand()
+		.alongWith(new WaitCommand(2)
+		.andThen(kickers.outputKickerCommand()))))));
+		// .alongWith(new LineWithSpeaker(
+		// 	() -> -driver.getRawAxis(translationAxis),
+		// 	() -> -driver.getRawAxis(strafeAxis),
+		// 	() -> -driver.getRawAxis(rotationAxis)))
+		// 	)));
 
+
+		commandXBoxController.leftTrigger().toggleOnTrue(
+			changeAngelShooter.setAngleToAmp()
+			.alongWith(new WaitCommand(1.5)
+			.andThen(shooter.ampshotCommand()
+			.alongWith(new WaitCommand(1)
+			.andThen(kickers.outputKickerCommand()))))
+		);
 
 		//intake Buttons
 		commandXBoxController.leftBumper().whileTrue(
 			intake.inputCommand()
 			.alongWith(shooter.floorInputCommand())
-			.alongWith(changeAngelShooter.setTargetAngaleCommand()));
+			.alongWith(kickers.inputKickerCommand())
+			.alongWith(changeAngelShooter.setAngleFromShuffleboardCommand()));
 
 		//shooter
 		commandXBoxController.x().whileTrue(shooter.shootUpCommand()
-		.alongWith(new WaitCommand(2.5)
+		.alongWith(new WaitCommand(2)
 		.andThen(kickers.outputKickerCommand())));
 
 
 		commandXBoxController.b().whileTrue(shooter.insertCommand());
 
 		// commandXBoxController.rightTrigger().onTrue(swerve.test());
-		commandXBoxController.leftTrigger().whileTrue(new LineWithSpeaker(
-				() -> -driver.getRawAxis(translationAxis),
-				() -> -driver.getRawAxis(strafeAxis),
-				() -> -driver.getRawAxis(rotationAxis)));
+		// commandXBoxController.leftTrigger().whileTrue(new LineWithSpeaker(
+		// 		() -> -driver.getRawAxis(translationAxis),
+		// 		() -> -driver.getRawAxis(strafeAxis),
+		// 		() -> -driver.getRawAxis(rotationAxis)));
 		
-		commandXBoxController.a().toggleOnTrue(changeAngelShooter.setRotationCommand());
+		commandXBoxController.a().toggleOnTrue(changeAngelShooter.setAngleFromShuffleboardCommand());
 		
+
+		commandXBoxController.rightTrigger().whileTrue(shooter.shootUpCommand());
 	
 	}
 
@@ -154,7 +160,7 @@ public class RobotContainer {
 		intake.setDefaultCommand(intake.stopMotorsCommand());
 		shooter.setDefaultCommand(shooter.stopMotorsCommand());
 		kickers.setDefaultCommand(kickers.stopMotorsCommand());
-		changeAngelShooter.setDefaultCommand(changeAngelShooter.setToZeroRotationCommand());
+		changeAngelShooter.setDefaultCommand(changeAngelShooter.setToZeroAngleCommand());
 		
 
 	}

@@ -20,6 +20,14 @@ public class Intake extends SubsystemBase {
       MotorType.kBrushless);
   /** Creates a new Intake. */
   public Intake() {
+
+    rightMotor.setSmartCurrentLimit(40);
+    rightMotor.setSecondaryCurrentLimit(50);
+
+    leftMotor.setSmartCurrentLimit(40);
+    leftMotor.setSecondaryCurrentLimit(50);
+
+
     leftMotor.setInverted(true);
     rightMotor.setInverted(false);
   }
@@ -55,6 +63,7 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
+    System.out.println(rightMotor.getMotorTemperature());
     // This method will be called once per scheduler run
   }
 }

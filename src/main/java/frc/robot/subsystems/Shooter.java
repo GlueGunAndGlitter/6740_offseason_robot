@@ -4,22 +4,10 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.ControlRequest;
-import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.compound.Diff_DutyCycleOut_Position;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -38,6 +26,17 @@ public class Shooter extends SubsystemBase {
   
   public Shooter() {
     
+
+    frontDownMotor.setSmartCurrentLimit(35);
+    frontDownMotor.setSecondaryCurrentLimit(50);
+
+    frontUpMotor.setSmartCurrentLimit(40);
+    frontUpMotor.setSecondaryCurrentLimit(50);
+
+    backDownMotor.setSmartCurrentLimit(40);
+    backDownMotor.setSecondaryCurrentLimit(50);
+  
+
     frontDownMotor.setInverted(false);
     frontUpMotor.setInverted(true);
     backDownMotor.setInverted(false);
@@ -47,30 +46,34 @@ public class Shooter extends SubsystemBase {
    
 
   private void shootUp(){
+
     frontUpMotor.set(Robot.ShooterfrontUpMotorSpeed.getDouble(0));
     frontDownMotor.set(Robot.ShooterfrontDownMotorSpeed.getDouble(0));
-    backDownMotor.set(-
-    Robot.ShooterBackDownMotorSpeed.getDouble(0));
+    backDownMotor.set(-Robot.ShooterBackDownMotorSpeed.getDouble(0));
   }
 
   private void insert(){
-    frontUpMotor.set(-Robot.ShooterfrontUpMotorSpeed.getDouble(0)-0.5);
-    frontDownMotor.set(-Robot.ShooterfrontDownMotorSpeed.getDouble(0)-0.5);
-    backDownMotor.set(Robot.ShooterBackDownMotorSpeed.getDouble(0)-0.5);
+    frontUpMotor.set(-Robot.ShooterfrontUpMotorSpeed.getDouble(0));
+    frontDownMotor.set(-Robot.ShooterfrontDownMotorSpeed.getDouble(0));
+    backDownMotor.set(Robot.ShooterBackDownMotorSpeed.getDouble(0));
   }
 
   private void floorInput(){
-    frontUpMotor.set(-Robot.ShooterfrontUpMotorSpeed.getDouble(0) );
+    frontUpMotor.set(0);
     frontDownMotor.set(Robot.ShooterfrontDownMotorSpeed.getDouble(0)-0.5);
-    backDownMotor.set(-Robot.ShooterBackDownMotorSpeed.getDouble(0)+0.3);
+    backDownMotor.set(Robot.ShooterBackDownMotorSpeed.getDouble(0)-0.2);
   }
 
   private void ampShot(){
-    frontUpMotor.set(-Robot.ShooterfrontUpMotorSpeed.getDouble(0)+0.5);
-    frontDownMotor.set(Robot.ShooterfrontDownMotorSpeed.getDouble(0)-0.5);
-    backDownMotor.set(Robot.ShooterBackDownMotorSpeed.getDouble(0)-0.6);
+    frontUpMotor.set(-Robot.ShooterfrontUpMotorSpeed.getDouble(0));
+    frontDownMotor.set(0);
+    backDownMotor.set(-Robot.ShooterBackDownMotorSpeed.getDouble(0)-0.85);
   }
 
+  private double getRPM(){
+    double RPM = frontDownMotor.getEncoder().getVelocity();
+    return RPM;
+  }
 
   public Command shootUpCommand(){
     return this.run(() -> shootUp());
@@ -85,7 +88,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command ampshotCommand(){
-    return this.run(() -> shootUp());
+    return this.run(() -> ampShot());
   }
 
   
@@ -107,6 +110,7 @@ public class Shooter extends SubsystemBase {
   }
   @Override
   public void periodic() {
+    // System.out.println(getRPM());
     // This method will be called once per scheduler run
     
   }
