@@ -30,21 +30,28 @@ public class LineWithSpeaker extends PIDCommand {
           () -> Math.IEEEremainder(RobotContainer.alineWithSpeakerAngel,360),
           // This uses the output
           output -> {
+
+            double megerment = Math.IEEEremainder(RobotContainer.swerve.getHeading().getDegrees(), 360);
+            double setpoint = Math.IEEEremainder(RobotContainer.alineWithSpeakerAngel,360);
             // Use the output here
             double err = Math.IEEEremainder(RobotContainer.swerve.getHeading().getDegrees(), 360) - Math.IEEEremainder(RobotContainer.alineWithSpeakerAngel,360);
             double alternativeOutput = 2;
             if (Math.abs(err) > 180){
-              alternativeOutput = (360 + err *  (Math.abs(Math.IEEEremainder(RobotContainer.alineWithSpeakerAngel,360))/ Math.IEEEremainder(RobotContainer.alineWithSpeakerAngel,360))) * 0.009;
+              alternativeOutput = (360 + err *  (Math.abs(Math.IEEEremainder(RobotContainer.alineWithSpeakerAngel,360))/ Math.IEEEremainder(RobotContainer.alineWithSpeakerAngel,360))) * Constants.LineWithSpeakerConstants.KP;
               alternativeOutput = alternativeOutput * -(Math.abs(Math.IEEEremainder(RobotContainer.alineWithSpeakerAngel,360))/ Math.IEEEremainder(RobotContainer.alineWithSpeakerAngel,360));
             }
+
             output = Math.min(Math.abs(alternativeOutput), Math.abs(output));
+            if ((megerment < setpoint && (megerment > 0 || (megerment < 0 && setpoint < 0))) || (megerment > 0 && setpoint < 0)) {
+              output = -output;
+            }
             // apply deadband
             double translationVal = MathUtil.applyDeadband(translationX.getAsDouble(), Constants.stickDeadband);
             double strafeVal = MathUtil.applyDeadband(translationY.getAsDouble(), Constants.stickDeadband);
 
             RobotContainer.swerve.drive(
             new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed),
-            output * Constants.Swerve.maxAngularVelocity,
+            -output * Constants.Swerve.maxAngularVelocity,
             false,
             true);
           }

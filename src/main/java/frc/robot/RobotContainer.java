@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.automations.LineWithSpeaker;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.commands.Test;
 import frc.robot.subsystems.*;
 import frc.robot.vision.AprilTagVision;
 import frc.robot.vision.NoteVision;
@@ -64,6 +66,7 @@ public class RobotContainer {
 	public final static ChangeAngelShooter changeAngelShooter = new ChangeAngelShooter();
 	public final static NoteVision noteVision = new NoteVision();
 	public final static AprilTagVision aprilTagVision = new AprilTagVision();
+	public final static Led led = new Led();
 	
 
 
@@ -117,13 +120,13 @@ public class RobotContainer {
 		// 	)));
 
 
-		commandXBoxController.leftTrigger().toggleOnTrue(
-			changeAngelShooter.setAngleToAmp()
-			.alongWith(new WaitCommand(1.5)
-			.andThen(shooter.ampshotCommand()
-			.alongWith(new WaitCommand(1)
-			.andThen(kickers.outputKickerCommand()))))
-		);
+		// commandXBoxController.leftTrigger().toggleOnTrue(
+		// 	changeAngelShooter.setAngleToAmp()
+		// 	.alongWith(new WaitCommand(1.5)
+		// 	.andThen(shooter.ampshotCommand()
+		// 	.alongWith(new WaitCommand(1)
+		// 	.andThen(kickers.outputKickerCommand()))))
+		// );
 
 		//intake Buttons
 		commandXBoxController.leftBumper().whileTrue(
@@ -133,23 +136,25 @@ public class RobotContainer {
 			.alongWith(changeAngelShooter.setAngleFromShuffleboardCommand()));
 
 		//shooter
-		commandXBoxController.x().whileTrue(shooter.shootUpCommand()
-		.alongWith(new WaitCommand(2)
-		.andThen(kickers.outputKickerCommand())));
+		commandXBoxController.x().whileTrue(shooter.shootUpCommand().alongWith(new Test()));
+
+
+		// .alongWith(new WaitCommand(2)
+		// .andThen(kickers.outputKickerCommand())));
 
 
 		commandXBoxController.b().whileTrue(shooter.insertCommand());
 
-		// commandXBoxController.rightTrigger().onTrue(swerve.test());
-		// commandXBoxController.leftTrigger().whileTrue(new LineWithSpeaker(
-		// 		() -> -driver.getRawAxis(translationAxis),
-		// 		() -> -driver.getRawAxis(strafeAxis),
-		// 		() -> -driver.getRawAxis(rotationAxis)));
+		commandXBoxController.rightTrigger().onTrue(swerve.setAlineWithSpeakerAngelCommand());
+		commandXBoxController.leftTrigger().whileTrue(new LineWithSpeaker(
+				() -> -driver.getRawAxis(translationAxis),
+				() -> -driver.getRawAxis(strafeAxis),
+				() -> -driver.getRawAxis(rotationAxis)));
 		
 		commandXBoxController.a().toggleOnTrue(changeAngelShooter.setAngleFromShuffleboardCommand());
 		
 
-		commandXBoxController.rightTrigger().whileTrue(shooter.shootUpCommand());
+		// commandXBoxController.rightTrigger().whileTrue(shooter.shootUpCommand());
 	
 	}
 

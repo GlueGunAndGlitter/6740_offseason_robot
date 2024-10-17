@@ -29,7 +29,7 @@ public class Kickers extends SubsystemBase {
     motorKicker.set(Robot.KickerMotorShafelbordSpeed.getDouble(0));
   }
 
-  private void outputKicker(){
+  public void outputKicker(){
     motorKicker.set(-Robot.KickerMotorShafelbordSpeed.getDouble(0));
   }
 

@@ -178,7 +178,8 @@ public class Swerve extends SubsystemBase {
         double m;
         double angle;
         if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue){
-         m = (robotPose.getY() - 5.5478)/(robotPose.getX() + 0.0381);
+         m = (robotPose.getY() - 
+         5.5478)/(robotPose.getX() + 0.0381);
          angle= (180 -Math.toDegrees(Math.atan(m)));
         }else{
          m =(robotPose.getY() - 5.5478)/(robotPose.getX() - 16.5793);
@@ -229,6 +230,8 @@ public class Swerve extends SubsystemBase {
   
         m_field.setRobotPose(getPose());
 
+        // System.out.println();
+        // System.out.println("megerment: " + Math.IEEEremainder(getHeading().getDegrees(), 360) + "setpoint: " + Math.IEEEremainder(RobotContainer.alineWithSpeakerAngel,360));
 
 
         // Update the odometry with the standard method

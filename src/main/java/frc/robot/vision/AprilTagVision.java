@@ -23,7 +23,7 @@ public class AprilTagVision {
     AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
     // Transform for the first camera
-    Transform3d robotToCam1 = new Transform3d(new Translation3d(-0.3, 0.0, 0.23), new Rotation3d(0,0,0)); // Camera 1 location
+    Transform3d robotToCam1 = new Transform3d(new Translation3d(0.3, 0.27, 0.23), new Rotation3d(Math.toRadians(50),0,0)); // Camera 1 location
     // Transform for the second camera
     Transform3d robotToCam2 = new Transform3d(new Translation3d(-0.5, 0.0, 0.5), new Rotation3d(0,0,0)); // Camera 2 location
 

@@ -50,6 +50,8 @@ public class Robot extends TimedRobot {
   public static GenericEntry ShooterBackDownMotorSpeed;
   public static GenericEntry KickerMotorShafelbordSpeed;
   public static GenericEntry shooterAngel;
+  public static GenericEntry ShooterRPM;
+
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -170,7 +172,9 @@ public class Robot extends TimedRobot {
     ShooterBackDownMotorSpeed = Shuffleboard.getTab("Shooter").add("ShooterBackDownMotorSpeed",1 )
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
-        
+    ShooterRPM = Shuffleboard.getTab("Shooter").add("ShooterRPM",0 )
+        .withWidget(BuiltInWidgets.kTextView)
+        .getEntry();
 
     // reverseTranspotation = Shuffleboard.getTab("Robot").add("reverse
     // transportation working", false)
