@@ -64,6 +64,7 @@ public class RobotContainer {
 	public final static ChangeAngelShooter changeAngelShooter = new ChangeAngelShooter();
 	public final static NoteVision noteVision = new NoteVision();
 	public final static AprilTagVision aprilTagVision = new AprilTagVision();
+	public final static Led led = new Led();
 	
 
 

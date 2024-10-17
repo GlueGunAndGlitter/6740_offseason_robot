@@ -10,7 +10,9 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Led;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 
 public class Intake extends SubsystemBase {
 
@@ -35,6 +37,7 @@ public class Intake extends SubsystemBase {
   private void input(double rightSpeed, double leftSpeed){
     rightMotor.set(rightSpeed);
     leftMotor.set(leftSpeed);
+    Led.colorRed();
   }
 
   private void output(double rightSpeed, double leftSpeed){
@@ -51,7 +54,7 @@ public class Intake extends SubsystemBase {
     return this.run(() -> input(
       Robot.IntakeRightMotorShafelbordSpeed.getDouble(0),
       Robot.IntakeLeftMotorShfelbordSpeed.getDouble(0)));
-  }
+    }
 
   public Command outputCommand(double rightSpeed, double leftSpeed){
     return this.run(() -> output(rightSpeed,leftSpeed));
@@ -63,7 +66,7 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    System.out.println(rightMotor.getMotorTemperature());
+    //System.out.println(rightMotor.getMotorTemperature());
     // This method will be called once per scheduler run
   }
 }
